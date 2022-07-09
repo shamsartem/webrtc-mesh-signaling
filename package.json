@@ -1,0 +1,127 @@
+{
+  "name": "dbudget-node",
+  "version": "1.0.0",
+  "description": "dbudget backend",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "nodemon ./src/index.ts",
+    "build": "shx rm -rf dist && tsc -b",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Artsiom Shamsutdzinau",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.1",
+    "socket.io": "^4.5.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node16-strictest": "^1.0.2",
+    "@types/express": "^4.17.13",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "eslint": "^8.17.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "nodemon": "^2.0.16",
+    "shx": "^0.3.4",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.3"
+  },
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:@typescript-eslint/recommended-requiring-type-checking",
+      "plugin:import/recommended",
+      "plugin:import/typescript"
+    ],
+    "plugins": [
+      "@typescript-eslint",
+      "import",
+      "license-header",
+      "unused-imports"
+    ],
+    "rules": {
+      "no-plusplus": "error",
+      "operator-assignment": [
+        "error",
+        "never"
+      ],
+      "@typescript-eslint/explicit-function-return-type": [
+        "error",
+        {
+          "allowExpressions": false,
+          "allowTypedFunctionExpressions": false,
+          "allowHigherOrderFunctions": false,
+          "allowDirectConstAssertionInArrowFunctions": false,
+          "allowConciseArrowFunctionExpressionsStartingWithVoid": false
+        }
+      ],
+      "@typescript-eslint/explicit-member-accessibility": [
+        "error",
+        {
+          "accessibility": "no-public"
+        }
+      ],
+      "@typescript-eslint/strict-boolean-expressions": [
+        "error",
+        {
+          "allowString": false,
+          "allowNumber": false,
+          "allowNullableObject": false,
+          "allowNullableBoolean": false,
+          "allowNullableString": false,
+          "allowNullableNumber": false,
+          "allowAny": false
+        }
+      ],
+      "@typescript-eslint/consistent-type-assertions": [
+        "error",
+        {
+          "assertionStyle": "never"
+        }
+      ],
+      "import/order": [
+        "error",
+        {
+          "newlines-between": "always",
+          "alphabetize": {
+            "order": "asc",
+            "caseInsensitive": true
+          }
+        }
+      ],
+      "unused-imports/no-unused-imports": "error",
+      "license-header/header": [
+        "error",
+        "./resources/license-header.js"
+      ]
+    },
+    "overrides": [
+      {
+        "files": [
+          "*.ts",
+          "*.tsx"
+        ],
+        "extends": [
+          "plugin:@typescript-eslint/recommended",
+          "plugin:@typescript-eslint/recommended-requiring-type-checking"
+        ],
+        "parserOptions": {
+          "project": [
+            "./tsconfig.json"
+          ]
+        }
+      }
+    ]
+  },
+  "eslintIgnore": [
+    "/dist"
+  ],
+  "prettier": {
+    "trailingComma": "all",
+    "semi": false,
+    "singleQuote": true
+  }
+}
