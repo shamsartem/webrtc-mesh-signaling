@@ -16,6 +16,10 @@ const io = new Server(server, {
 const appsMap = new Map<string, Map<string, Map<string, Socket>>>()
 const socketIdMap = new Map<string, { app: string; username: string }>()
 
+const log = (msg: string): void => {
+  console.log(`[${new Date().toISOString()}] ${msg}`)
+}
+
 const handleInit = (socket: Socket, username: string, app: string) => {
   let appMap = appsMap.get(app)
   if (appMap === undefined) {
@@ -31,8 +35,11 @@ const handleInit = (socket: Socket, username: string, app: string) => {
 
   socketIdMap.set(socket.id, { app, username })
 
+  const existingPeers = Array.from(usernameMap.keys())
+  log(`INIT app="${app}" user="${username}" socket="${socket.id}" existingPeers=${JSON.stringify(existingPeers)}`)
+
   socket.emit('socketIds', {
-    socketIds: Array.from(usernameMap.keys()),
+    socketIds: existingPeers,
   })
 
   usernameMap.set(socket.id, socket)
@@ -61,7 +68,13 @@ const handleSignal = (
     console.error(`Trying to signal unknown username "${username}"`)
     return
   }
-  usernameMap.get(socketId)?.emit('signal', { socketId: socket.id, signalData })
+  const targetSocket = usernameMap.get(socketId)
+  if (targetSocket === undefined) {
+    log(`SIGNAL FAIL from="${socket.id}" to="${socketId}" — target socket not found`)
+    return
+  }
+  log(`SIGNAL from="${socket.id}" to="${socketId}" user="${username}"`)
+  targetSocket.emit('signal', { socketId: socket.id, signalData })
 }
 
 const validMsg = ['init', 'signal'] as const
@@ -95,6 +108,7 @@ const isValidMessage = (message: unknown): message is Message => {
 }
 
 io.on('connection', (socket) => {
+  log(`CONNECT socket="${socket.id}"`)
   socket.on('message', (message: unknown) => {
     if (!isValidMessage(message)) {
       console.error('Invalid message', message)
@@ -159,11 +173,14 @@ io.on('connection', (socket) => {
   socket.on('disconnect', async () => {
     const data = socketIdMap.get(socket.id)
     if (data === undefined) {
+      log(`DISCONNECT socket="${socket.id}" (not registered)`)
       return
     }
     socketIdMap.delete(socket.id)
 
     const { app, username } = data
+    log(`DISCONNECT socket="${socket.id}" app="${app}" user="${username}"`)
+
     const appMap = appsMap.get(app)
     if (appMap === undefined) {
       return
